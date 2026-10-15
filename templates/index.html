@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌾 Smart Crop & Irrigation Dashboard</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        /* City Input */
+        .city-box {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: #0077cc;
+            color: white;
+            cursor: pointer;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .icon {
+            font-size: 35px;
+        }
+
+        .value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .weather-box {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🌾 Smart Crop & Irrigation Dashboard</h1>
+
+<!-- ✅ CITY INPUT -->
+<div class="city-box">
+    <input type="text" id="cityInput" placeholder="Enter City (e.g Pune)">
+    <button onclick="setCity()">Get Weather</button>
+</div>
+
+<!-- ✅ DASHBOARD -->
+<div class="dashboard">
+    <div class="card">
+        <div class="icon">🌡️</div>
+        <div>Temperature</div>
+        <div class="value" id="temp">--</div>
+    </div>
+
+    <div class="card">
+        <div class="icon">💧</div>
+        <div>Humidity</div>
+        <div class="value" id="hum">--</div>
+    </div>
+
+    <div class="card">
+        <div class="icon">🌱</div>
+        <div>Soil Moisture</div>
+        <div class="value" id="soil">--</div>
+    </div>
+
+    <div class="card">
+        <div class="icon">🌾</div>
+        <div>Suggested Crop</div>
+        <div class="value" id="crop">--</div>
+    </div>
+
+    <div class="card">
+        <div class="icon">🚿</div>
+        <div>Irrigation Advice</div>
+        <div class="value" id="advice">--</div>
+    </div>
+</div>
+
+<!-- ✅ WEATHER ALERTS -->
+<div class="weather-box">
+    <h3>🌦️ Weather Alerts</h3>
+    <div id="weather">--</div>
+</div>
+
+<script>
+let city = "Pune";
+
+function setCity(){
+    const input = document.getElementById("cityInput").value;
+    if(input){
+        city = input;
+    }
+}
+
+async function fetchData(){
+    try{
+        const res = await fetch(`/data?city=${city}`);
+        const data = await res.json();
+
+        document.getElementById("temp").textContent = data.temp.toFixed(1) + " °C";
+        document.getElementById("hum").textContent = data.hum.toFixed(1) + " %";
+        document.getElementById("soil").textContent = data.soil.toFixed(1) + " %";
+        document.getElementById("crop").textContent = data.crop;
+        document.getElementById("advice").textContent = data.advice;
+
+        document.getElementById("weather").innerHTML =
+            data.weather_alerts.join("<br>");
+
+    } catch(error){
+        console.error("Error:", error);
+    }
+}
+
+setInterval(fetchData, 2000);
+fetchData();
+</script>
+
+</body>
+</html>
